@@ -20,8 +20,8 @@ export class EmpleadoService {
       this.empleado.push(emp);
       return this.empleado;
     }
-    actualizar(id: string, empleadoActualziar: EmpleadoDTO) {
-      const nuevoemp = { id, ...empleadoActualziar };
+    actualizar(id: string, empleadoActualizar: EmpleadoDTO) {
+      const nuevoemp = { id, ...empleadoActualizar };
       this.empleado = this.empleado.map((empleado) =>
         empleado.id === id ? nuevoemp : empleado,
       );
