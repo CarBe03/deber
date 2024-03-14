@@ -7,17 +7,20 @@ import {
     IsString,
   } from 'class-validator';
   
-  export class EmpleadoDTO {
+  export class ProyectoDTO {
     @IsNotEmpty({ message: 'El campo es requerido' })
     @IsString({ message: 'Se necesita un texto' })
-    nombre: string;
+    nombre_proyecto: string;
     @IsNotEmpty({ message: 'El campo es requerido' })
     @IsString({ message: 'Se necesita un texto' })
-    cargo: string;
+    cliente: string;
+    @IsNotEmpty({ message: 'El campo es requerido' })
+    @IsString({ message: 'Se necesita un texto' })
+    duracion: string;
     @IsNotEmpty({ message: 'El campo es requerido' })
     @IsNumber()
     salario: number;
     @IsNotEmpty({ message: 'El campo es requerido' })
-    fecha_contratacion: Date;
-
+    fecha_inicio: Date;
+ 
   }

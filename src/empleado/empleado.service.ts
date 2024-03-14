@@ -29,6 +29,6 @@ export class EmpleadoService {
     }
     eliminar(id: string) {
       this.empleado = this.empleado.filter((empleado) => empleado.id !== id);
-      return 'empleado Eliminado';
+      return 'Empleado Eliminado con Exito';
     }
   }
