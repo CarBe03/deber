@@ -11,33 +11,25 @@ export class EmpleadoService {
   constructor(
     @InjectModel(EMPLEADO.name) private readonly model: Model<InterEmpleado>,
   ) {}
-  insertar(EmpleadoDTO: EmpleadoDTO): Promise<InterEmpleado> {
-    const nuevoEmpleado = new this.model(EmpleadoDTO);
-    return nuevoEmpleado.save();
+
+  async insertar(empleadoDTO: EmpleadoDTO): Promise<InterEmpleado> {
+    const newEmpleado = new this.model(empleadoDTO);
+    return await newEmpleado.save();
   }
-  todos(): Promise<InterEmpleado[]> {
-    return this.model.find().populate('empleado');
+  async todos(): Promise<InterEmpleado[]> {
+    return await this.model.find();
   }
-  uno(id: string): Promise<InterEmpleado> {
-    return this.model.findById(id).populate('empleado');
+  async uno(id: string): Promise<InterEmpleado> {
+    return await this.model.findById(id);
   }
-  actualizar(id: string, EmpleadoDTO: EmpleadoDTO): Promise<InterEmpleado> {
-    return this.model.findByIdAndUpdate(id, EmpleadoDTO, { new: true });
+  async actualizar(
+    id: string,
+    empleadoDTO: EmpleadoDTO,
+  ): Promise<InterEmpleado> {
+    return await this.model.findByIdAndUpdate(id, empleadoDTO, { new: true });
   }
   async eliminar(id: string) {
     await this.model.findByIdAndDelete(id);
-    return { status: HttpStatus.OK, msg: 'Empleado eliminado' };
-  }
-  async insertarEmpleado(
-    vueloId: string,
-    passengerId: string,
-  ): Promise<InterEmpleado> {
-    return await this.model
-      .findByIdAndUpdate(
-        vueloId,
-        { $addToSet: { passengers: passengerId } },
-        { new: true },
-      )
-      .populate('passengers');
+    return { status: HttpStatus.OK, message: 'Empleado Eliminado' };
   }
 }
