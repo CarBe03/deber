@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { EmpleadoService } from './empleado.service';
 import { InterEmpleado } from './empleado.interface';
-import { EmpleadoDTO } from './empleado.dto';
+import { EmpleadoDTO } from './dto/empleado.dto';
 @Controller('empleado')
 export class EmpleadoController {
   constructor(private empleadoServicio: EmpleadoService) {}
