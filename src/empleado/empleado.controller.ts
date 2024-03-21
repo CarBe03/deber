@@ -10,7 +10,7 @@ import {
 import { EmpleadoService } from './empleado.service';
 import { EmpleadoDTO } from './dto/empleado.dto';
 import { ApiTags } from '@nestjs/swagger';
-@ApiTags('Empleado')
+@ApiTags('empleado')
 @Controller('api/v2/empleado')
 export class EmpleadoController {
   constructor(private empleadoServicio: EmpleadoService) {}

@@ -1,34 +1,36 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
 import { InterProyecto } from './proyecto.interface';
-import { v4 as uuidV4 } from 'uuid';
-import { ProyectoDTO } from './proyecto.dto';
+import { Model } from 'mongoose';
+import { PROYECTO } from 'src/models/models';
+import { ProyectoDTO } from './dto/proyecto.dto';
 
 @Injectable()
 export class ProyectoService {
-    proyecto: InterProyecto[] = [];
-    todos() {
-      return this.proyecto;
-    }
-    uno(id_proyecto: string) {
-      return this.proyecto.find((proyecto) => proyecto.id_proyecto == id_proyecto);
-    }
-    insertar(proyecto: ProyectoDTO) {
-      const pro = {
-        id_proyecto: uuidV4(),
-        ...proyecto,
-      };
-      this.proyecto.push(pro);
-      return this.proyecto;
-    }
-    actualizar(id_proyecto: string, proyectoActualizar: ProyectoDTO) {
-      const nuevopro = { id_proyecto, ...proyectoActualizar };
-      this.proyecto = this.proyecto.map((proyecto) =>
-      proyecto.id_proyecto === id_proyecto ? nuevopro : proyecto,
-      );
-      return nuevopro;
-    }
-    eliminar(id_proyecto: string) {
-      this.proyecto = this.proyecto.filter((proyecto) => proyecto.id_proyecto !== id_proyecto);
-      return 'Proyecto Eliminado con Exito';
-    }
+  constructor(
+    @InjectModel(PROYECTO.name) private readonly model: Model<InterProyecto>,
+  ) {}
+
+  async todos(): Promise<InterProyecto[]> {
+    return await this.model.find();
+  }
+  async uno(id_proyecto: string): Promise<InterProyecto> {
+    return await this.model.findById(id_proyecto);
+  }
+  async insertar(proyectoDTO: ProyectoDTO): Promise<InterProyecto> {
+    const newProyecto = new this.model(proyectoDTO);
+    return await newProyecto.save();
+  }
+  async actualizar(
+    id_proyecto: string,
+    proyectoDTO: ProyectoDTO,
+  ): Promise<InterProyecto> {
+    return await this.model.findByIdAndUpdate(id_proyecto, proyectoDTO, {
+      new: true,
+    });
+  }
+  async eliminar(id_proyecto: string) {
+    await this.model.findByIdAndDelete(id_proyecto);
+    return { status: HttpStatus.OK, message: 'Proyecto Eliminado' };
+  }
 }

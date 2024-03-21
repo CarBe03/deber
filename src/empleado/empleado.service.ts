@@ -3,7 +3,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { InterEmpleado } from './empleado.interface';
 import { EMPLEADO } from 'src/models/models';
-import { v4 as uuidV4 } from 'uuid';
 import { EmpleadoDTO } from './dto/empleado.dto';
 
 @Injectable()

@@ -1,4 +1,4 @@
-export interface InterEmpleado {
+export interface InterEmpleado extends Document {
     id: string;
     nombre: string;
     cargo: string;
