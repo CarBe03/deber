@@ -18,5 +18,6 @@ import { EmpleadoSchema } from './schema/empleado.schema';
   ],
   controllers: [EmpleadoController],
   providers: [EmpleadoService],
+  exports: [EmpleadoService],
 })
 export class EmpleadoModule {}

@@ -1,37 +1,42 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { InterTrabajaen } from './trabaja_en.interface';
-import { v4 as uuidV4 } from 'uuid';
-import { TrabajaenDTO } from './trabaja_en.dto';
+import { TrabajaenDTO } from './dto/trabaja_en.dto';
+import { TRABAJA_EN } from 'src/models/models';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+
 @Injectable()
 export class TrabajaEnService {
-  trabaja_en: InterTrabajaen[] = [];
-  todos() {
-    return this.trabaja_en;
+  constructor(
+    @InjectModel(TRABAJA_EN.name) private readonly model: Model<InterTrabajaen>,
+  ) {}
+  insertar(trabajaenDTO: TrabajaenDTO): Promise<InterTrabajaen> {
+    const nuevoTrabajo = new this.model(trabajaenDTO);
+    return nuevoTrabajo.save();
   }
-  uno(id_trabajo: string) {
-    return this.trabaja_en.find(
-      (trabaja_en) => trabaja_en.id_trabajo == id_trabajo,
-    );
+  todos(): Promise<InterTrabajaen[]> {
+    return this.model.find().populate('Trabajo');
   }
-  insertar(trabaja_en: TrabajaenDTO) {
-    const traen = {
-        id_trabajo: uuidV4(),
-      ...trabaja_en,
-    };
-    this.trabaja_en.push(traen);
-    return this.trabaja_en;
+  uno(id_trabajo: string): Promise<InterTrabajaen> {
+    return this.model.findById(id_trabajo).populate('Trabajo');
   }
-  actualizar(id_trabajo: string, trabaja_enActualizar: TrabajaenDTO) {
-    const nuevotraen = { id_trabajo, ...trabaja_enActualizar };
-    this.trabaja_en = this.trabaja_en.map((trabaja_en) =>
-    trabaja_en.id_trabajo === id_trabajo ? nuevotraen : trabaja_en,
-    );
-    return nuevotraen;
+  actualizar(id_trabajo: string, vuelosDTO: TrabajaenDTO): Promise<InterTrabajaen> {
+    return this.model.findByIdAndUpdate(id_trabajo, vuelosDTO, { new: true });
   }
-  eliminar(id_trabajo: string) {
-    this.trabaja_en = this.trabaja_en.filter(
-      (trabaja_en) => trabaja_en.id_trabajo !== id_trabajo,
-    );
-    return 'Trabaja_en Eliminado con Exito';
+  async eliminar(id_trabajo: string) {
+    await this.model.findByIdAndDelete(id_trabajo);
+    return { status: HttpStatus.OK, msg: 'Trabajo eliminado' };
+  }
+  async insertarEmpleado(
+    id_trabajo: string,
+    empleadoId: string,
+  ): Promise<InterTrabajaen> {
+    return await this.model
+      .findByIdAndUpdate(
+        id_trabajo,
+        { $addToSet: { empleado: empleadoId } },
+        { new: true },
+      )
+      .populate('empleado');
   }
 }

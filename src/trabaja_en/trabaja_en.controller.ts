@@ -6,36 +6,52 @@ import {
   Param,
   Post,
   Put,
-  UsePipes,
-  ValidationPipe,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { TrabajaEnService } from './trabaja_en.service';
-import { InterTrabajaen } from './trabaja_en.interface';
-import { TrabajaenDTO } from './trabaja_en.dto';
-
-@Controller('trabaja-en')
+//import { ProyectoService } from 'src/proyecto/proyecto.service';
+import { EmpleadoService} from 'src/empleado/empleado.service';
+import { TrabajaenDTO } from './dto/trabaja_en.dto';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+@ApiTags('trabaja_en')
+@Controller('api/v1/trabaja_en')
 export class TrabajaEnController {
-    constructor(private TrabajaenServicio: TrabajaEnService) {}
-
-  @Get()
-  todos() {
-    return this.TrabajaenServicio.todos();
+    constructor(
+      private readonly trabajaEnService: TrabajaEnService,
+      //private readonly proyectoService: ProyectoService,
+      private readonly empleadoService: EmpleadoService,
+    ) {}
+    @Post()
+    @ApiOperation({ summary: 'Crea Trabajos' })
+    insertar(@Body() trabajaenDTO: TrabajaenDTO) {
+      return this.trabajaEnService.insertar(trabajaenDTO);
+    }
+    @Get()
+    @ApiOperation({ summary: 'Selecciona todos los Proyectos' })
+    todos() {
+      return this.trabajaEnService.todos();
+    }
+    @Get(':id_trabajo')
+    uno(@Param('id_trabajo') id_trabajo: string) {
+      return this.trabajaEnService.uno(id_trabajo);
+    }
+    @Put(':id_trabajo')
+    actualizar(@Param('id_trabajo') id_trabajo: string, @Body() trabajaenDTO: TrabajaenDTO) {
+      return this.trabajaEnService.actualizar(id_trabajo, trabajaenDTO);
+    }
+    @Delete(':id_trabajo')
+    eliminar(@Param('id_trabajo') id_trabajo: string) {
+      return this.trabajaEnService.eliminar(id_trabajo);
+    }
+    @Post(':trabaja_enId/empleado/:empleadoId')
+    async agregarEmpleado(
+      @Param('trabaja_enId') trabaja_enId: string,
+      @Param('empleadoId') empleadoId: string,
+    ) {
+      const empleado = await this.empleadoService.uno(empleadoId);
+      if (!empleado)
+        throw new HttpException('Empleado not found', HttpStatus.NOT_FOUND);
+      return this.trabajaEnService.insertarEmpleado(trabaja_enId, empleadoId);
+    }
   }
-
-  @Get(':id_trabajo')
-  uno(@Param('id_trabajo') id_trabajo: string) {
-    return this.TrabajaenServicio.uno(id_trabajo);
-  }
-  @Post()
-  insertar(@Body() trabaja_en: TrabajaenDTO) {
-    return this.TrabajaenServicio.insertar(trabaja_en);
-  }
-  @Put(':id')
-  actualizar(@Param('id_trabajo') id_trabajo: string, @Body() trabaja_en: TrabajaenDTO) {
-    return this.TrabajaenServicio.actualizar(id_trabajo, trabaja_en);
-  }
-  @Delete(':id_trabajo')
-  eliminar(@Param('id_trabajo') id_trabajo: string) {
-    return this.TrabajaenServicio.eliminar(id_trabajo);
-  }
-}
